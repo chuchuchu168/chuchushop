@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}商品目錄{% endblock %}
+{% block content %}
+<h1>商品目錄</h1>
+
+{% if not brand_logos %}
+<p class="text-muted">目前沒有品牌</p>
+{% else %}
+<div class="brand-grid">
+  {% for name, logo in brand_logos.items() %}
+  <a href="{{ url_for('brand_page', brand_name=name) }}" class="brand-card">
+    {% if logo %}
+    <img src="{{ url_for('static', filename='images/' + logo) }}" alt="{{ name }}">
+    {% else %}
+    <span class="brand-name-only">{{ name }}</span>
+    {% endif %}
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

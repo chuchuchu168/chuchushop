@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ brand_name }}{% endblock %}
+{% block content %}
+<div class="brand-header">
+  {% if brand_logo %}
+  <img class="brand-logo" src="{{ url_for('static', filename='images/' + brand_logo) }}" alt="{{ brand_name }}">
+  {% else %}
+  <h1>{{ brand_name }}</h1>
+  {% endif %}
+</div>
+
+{% if not product_names %}
+<p class="text-muted">目前沒有商品</p>
+{% else %}
+<div class="product-name-grid">
+  {% for pname in product_names %}
+  <a href="{{ url_for('product_page', brand_name=brand_name, product_name=pname) }}" class="product-name-card">
+    {% if product_images.get(pname) %}
+    <div class="pname-img-wrap">
+      <img src="{{ url_for('static', filename='images/' + product_images[pname]) }}" alt="{{ pname }}">
+    </div>
+    {% endif %}
+    <div class="pname">{{ pname }}</div>
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
+
+<a href="{{ url_for('catalog') }}" class="btn btn-primary mt-2">返回品牌列表</a>
+{% endblock %}

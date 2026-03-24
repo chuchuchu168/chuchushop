@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}結帳{% endblock %}
+{% block content %}
+<h1>結帳確認</h1>
+
+<div class="bank-info">
+  <h3>匯款資訊</h3>
+  <p><strong>銀行：</strong>（請填入銀行名稱）</p>
+  <p><strong>帳號：</strong>（請填入帳號）</p>
+  <p><strong>戶名：</strong>（請填入戶名）</p>
+  <p class="mt-1 text-muted" style="font-size:.85rem;">下單後請盡快匯款，並於備註填寫匯款帳號末五碼</p>
+</div>
+
+<table>
+  <thead>
+    <tr><th>品牌</th><th>商品</th><th>單價</th><th>數量</th><th>小計</th></tr>
+  </thead>
+  <tbody>
+    {% for it in items %}
+    <tr>
+      <td>{{ it.product.brand }}</td>
+      <td>{{ it.product.name }}</td>
+      <td>${{ "{:,}".format(it.product.price) }}</td>
+      <td>{{ it.qty }}</td>
+      <td>${{ "{:,}".format(it.subtotal) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr><th colspan="4" style="text-align:right">合計</th><th>${{ "{:,}".format(total) }}</th></tr>
+  </tfoot>
+</table>
+
+<form method="POST">
+  <div class="form-group">
+    <label>備註（匯款帳號末五碼等）</label>
+    <textarea name="note" rows="3" placeholder="選填"></textarea>
+  </div>
+  <div style="display:flex;gap:.8rem;justify-content:flex-end;">
+    <a href="{{ url_for('cart_page') }}" class="btn btn-warning">返回購物車</a>
+    <button class="btn btn-success" type="submit">確認下單</button>
+  </div>
+</form>
+{% endblock %}

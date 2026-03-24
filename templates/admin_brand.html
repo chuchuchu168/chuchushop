@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}管理 - {{ brand_name }}{% endblock %}
+{% block content %}
+<h1>{{ brand_name }} 商品管理</h1>
+
+<h3>新增商品</h3>
+<form method="POST" action="{{ url_for('admin_product_add') }}" class="card">
+  <input type="hidden" name="brand" value="{{ brand_name }}">
+  <div class="inline-form">
+    <input type="text" name="name" placeholder="品名" required style="width:200px">
+    <input type="text" name="barcode" placeholder="條碼" style="width:140px">
+    <input type="text" name="spec" placeholder="規格" style="width:120px">
+    <input type="number" name="price" placeholder="價格" required min="0">
+    <input type="number" name="sort_order" placeholder="排序" value="0" style="width:60px">
+    <button class="btn btn-success btn-sm" type="submit">新增</button>
+  </div>
+</form>
+
+<h3 class="mt-2">現有商品</h3>
+{% if not product_names %}
+<p class="text-muted">此品牌尚無商品</p>
+{% else %}
+<div class="product-name-grid">
+  {% for pname in product_names %}
+  <a href="{{ url_for('admin_product_variants', brand_name=brand_name, product_name=pname) }}" class="product-name-card">
+    <div class="pname">{{ pname }}</div>
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
+
+<a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary mt-2">返回管理後台</a>
+{% endblock %}

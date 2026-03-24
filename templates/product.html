@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ brand_name }} - {{ product_name }}{% endblock %}
+{% block content %}
+<h1>{{ brand_name }} - {{ product_name }}{% if products and products[0].barcode and '-1P' in products[0].barcode.upper() %} (2入/組){% endif %}</h1>
+
+{% if not products %}
+<p class="text-muted">目前沒有商品</p>
+{% else %}
+<table>
+  <thead>
+    <tr><th>規格</th><th>條碼</th><th>價格</th><th>庫存</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for p in products %}
+    <tr>
+      <td>{{ p.spec or '-' }}</td>
+      <td class="text-muted" style="font-size:.85rem">{{ p.barcode }}</td>
+      <td class="price-col">${{ "{:,}".format(p.price) }}</td>
+      <td>
+        {% if p.stock > 0 %}
+        <span style="color:var(--success)">{{ p.stock }}</span>
+        {% else %}
+        <span style="color:var(--danger)">缺貨</span>
+        {% endif %}
+      </td>
+      <td>
+        {% if p.stock > 0 %}
+        <form method="POST" action="{{ url_for('cart_add') }}" class="inline-form">
+          <input type="hidden" name="product_id" value="{{ p.id }}">
+          <input type="number" name="qty" value="1" min="1" max="{{ p.stock }}" style="width:55px;padding:.3rem;border:1px solid #ddd;border-radius:4px;text-align:center;">
+          <button class="btn btn-primary btn-sm" type="submit">加入購物車</button>
+        </form>
+        {% else %}
+        <button class="btn btn-sm" disabled style="background:#ccc;color:#666;cursor:not-allowed">缺貨中</button>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<a href="{{ url_for('brand_page', brand_name=brand_name) }}" class="btn btn-primary mt-2">返回 {{ brand_name }}</a>
+{% endblock %}

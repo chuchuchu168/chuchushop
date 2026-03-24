@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>炭吉批發同溫層</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="home-body">
+<div class="home-split">
+  <div class="home-left">
+    <img src="{{ url_for('static', filename='images/tanji_logo.png') }}" alt="炭吉" class="home-logo-big">
+  </div>
+  <div class="home-right">
+    <h1 class="home-title">炭吉批發同溫層</h1>
+    <p class="home-subtitle">韓國正品直送 | 台灣公司貨<br>批發優惠 | 審核制會員</p>
+    <div class="home-actions">
+      <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">登入</a>
+      <a href="{{ url_for('register') }}" class="btn btn-success btn-lg">註冊</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

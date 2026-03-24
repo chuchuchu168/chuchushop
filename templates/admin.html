@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}管理後台{% endblock %}
+{% block content %}
+<h1>管理後台</h1>
+
+<div class="admin-tabs">
+  <button class="active" onclick="switchTab('pending')">待審核 ({{ pending|length }})</button>
+  <button onclick="switchTab('products')">商品管理</button>
+  <button onclick="switchTab('orders')">訂單管理</button>
+  <button onclick="switchTab('members')">會員列表</button>
+</div>
+
+<!-- 待審核 -->
+<div id="tab-pending" class="tab-panel active">
+  {% if not pending %}
+  <p class="text-muted">無待審核會員</p>
+  {% else %}
+  <table>
+    <thead><tr><th>公司</th><th>聯絡人</th><th>電話</th><th>Email</th><th>註冊時間</th><th>操作</th></tr></thead>
+    <tbody>
+    {% for u in pending %}
+    <tr>
+      <td>{{ u.company }}</td>
+      <td>{{ u.contact }}</td>
+      <td>{{ u.phone }}</td>
+      <td>{{ u.email }}</td>
+      <td>{{ u.created_at[:16] }}</td>
+      <td>
+        <form method="POST" action="{{ url_for('admin_approve', uid=u.id) }}" style="display:inline">
+          <button class="btn btn-success btn-sm">通過</button>
+        </form>
+        <form method="POST" action="{{ url_for('admin_reject', uid=u.id) }}" style="display:inline">
+          <button class="btn btn-danger btn-sm">拒絕</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+
+<!-- 商品管理 -->
+<div id="tab-products" class="tab-panel">
+  <h3>品牌商品管理</h3>
+  {% if not brand_list %}
+  <p class="text-muted">尚無品牌</p>
+  {% else %}
+  <div class="product-name-grid">
+    {% for b in brand_list %}
+    <a href="{{ url_for('admin_brand_products', brand_name=b) }}" class="product-name-card">
+      <div class="pname">{{ b }}</div>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+<!-- 訂單管理 -->
+<div id="tab-orders" class="tab-panel">
+  {% if not orders %}
+  <p class="text-muted">尚無訂單</p>
+  {% else %}
+  <table>
+    <thead><tr><th>#</th><th>公司</th><th>金額</th><th>狀態</th><th>日期</th><th>操作</th></tr></thead>
+    <tbody>
+    {% for o in orders %}
+    <tr>
+      <td>{{ o.id }}</td>
+      <td>{{ o.company }}</td>
+      <td>${{ "{:,}".format(o.total) }}</td>
+      <td><span class="status status-{{ o.status }}">{{ o.status }}</span></td>
+      <td>{{ o.created_at[:16] }}</td>
+      <td>
+        <a href="{{ url_for('admin_order_detail', oid=o.id) }}" class="btn btn-primary btn-sm">查看</a>
+        <form method="POST" action="{{ url_for('admin_order_status', oid=o.id) }}" style="display:inline" class="inline-form">
+          <select name="status">
+            <option value="待匯款">待匯款</option>
+            <option value="已確認">已確認</option>
+            <option value="已出貨">已出貨</option>
+            <option value="已完成">已完成</option>
+            <option value="已取消">已取消</option>
+          </select>
+          <button class="btn btn-warning btn-sm" type="submit">更新</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+
+<!-- 會員列表 -->
+<div id="tab-members" class="tab-panel">
+  {% if not users %}
+  <p class="text-muted">尚無已審核會員</p>
+  {% else %}
+  <table>
+    <thead><tr><th>公司</th><th>聯絡人</th><th>電話</th><th>Email</th><th>註冊時間</th></tr></thead>
+    <tbody>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.company }}</td>
+      <td>{{ u.contact }}</td>
+      <td>{{ u.phone }}</td>
+      <td>{{ u.email }}</td>
+      <td>{{ u.created_at[:16] }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.admin-tabs button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+{% endblock %}

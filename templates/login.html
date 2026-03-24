@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}登入{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="card">
+    <h1>登入</h1>
+    <form method="POST">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" required autofocus>
+      </div>
+      <div class="form-group">
+        <label>密碼</label>
+        <input type="password" name="password" required>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit">登入</button>
+    </form>
+    <p class="text-center mt-2">
+      <a href="{{ url_for('register') }}">還沒有帳號？註冊</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

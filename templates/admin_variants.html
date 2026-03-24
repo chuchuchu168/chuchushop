@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}管理 - {{ brand_name }} - {{ product_name }}{% endblock %}
+{% block content %}
+<h1>{{ brand_name }} - {{ product_name }}</h1>
+
+{% if not products %}
+<p class="text-muted">尚無規格</p>
+{% else %}
+<table>
+  <thead><tr><th>ID</th><th>規格</th><th>條碼</th><th>價格</th><th>庫存</th><th>啟用</th><th>操作</th></tr></thead>
+  <tbody>
+  {% for p in products %}
+  <tr>
+    <form method="POST" action="{{ url_for('admin_product_edit', pid=p.id) }}">
+    <input type="hidden" name="brand" value="{{ p.brand }}">
+    <input type="hidden" name="name" value="{{ p.name }}">
+    <input type="hidden" name="barcode" value="{{ p.barcode or '' }}">
+    <input type="hidden" name="sort_order" value="{{ p.sort_order }}">
+    <td>{{ p.id }}</td>
+    <td><input type="text" name="spec" value="{{ p.spec or '' }}" style="width:160px"></td>
+    <td style="font-size:.85rem;color:var(--muted)">{{ p.barcode }}</td>
+    <td><input type="number" name="price" value="{{ p.price }}" style="width:80px"></td>
+    <td>{{ p.stock }}</td>
+    <td><select name="active"><option value="1" {% if p.active %}selected{% endif %}>是</option><option value="0" {% if not p.active %}selected{% endif %}>否</option></select></td>
+    <td>
+      <button class="btn btn-primary btn-sm" type="submit">儲存</button>
+      </form>
+      <form method="POST" action="{{ url_for('admin_product_delete', pid=p.id) }}" style="display:inline" onsubmit="return confirm('確定刪除？')">
+        <button class="btn btn-danger btn-sm" type="submit">刪除</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<div class="mt-2" style="display:flex;gap:.8rem">
+  <a href="{{ url_for('admin_brand_products', brand_name=brand_name) }}" class="btn btn-primary">返回 {{ brand_name }}</a>
+  <a href="{{ url_for('admin_dashboard') }}" class="btn btn-warning">返回管理後台</a>
+</div>
+{% endblock %}

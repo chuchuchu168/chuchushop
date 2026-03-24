@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}購物車{% endblock %}
+{% block content %}
+<h1>購物車</h1>
+{% if not items %}
+<div class="card">
+  <p class="text-muted">購物車是空的</p>
+  <a href="{{ url_for('catalog') }}" class="btn btn-primary mt-1">去逛逛</a>
+</div>
+{% else %}
+<form method="POST" action="{{ url_for('cart_update') }}">
+<table>
+  <thead>
+    <tr><th>品牌</th><th>商品</th><th>單價</th><th>數量</th><th>小計</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for it in items %}
+    <tr>
+      <td>{{ it.product.brand }}</td>
+      <td>{{ it.product.name }}</td>
+      <td>${{ "{:,}".format(it.product.price) }}</td>
+      <td><input type="number" name="qty_{{ it.product.id }}" value="{{ it.qty }}" min="0" style="width:60px;padding:.3rem;border:1px solid #ddd;border-radius:4px;text-align:center;"></td>
+      <td>${{ "{:,}".format(it.subtotal) }}</td>
+      <td>
+        <form method="POST" action="{{ url_for('cart_remove', pid=it.product.id) }}" style="display:inline">
+          <button class="btn btn-danger btn-sm" type="submit">移除</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr><th colspan="4" style="text-align:right">合計</th><th>${{ "{:,}".format(total) }}</th><th></th></tr>
+  </tfoot>
+</table>
+<div style="display:flex;gap:.8rem;justify-content:flex-end;margin-top:1rem;">
+  <button class="btn btn-warning" type="submit">更新數量</button>
+  <a href="{{ url_for('checkout') }}" class="btn btn-success">前往結帳</a>
+</div>
+</form>
+{% endif %}
+{% endblock %}

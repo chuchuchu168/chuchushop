@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}我的訂單{% endblock %}
+{% block content %}
+<h1>我的訂單</h1>
+{% if not orders %}
+<div class="card"><p class="text-muted">尚無訂單</p></div>
+{% else %}
+<table>
+  <thead>
+    <tr><th>訂單編號</th><th>金額</th><th>狀態</th><th>日期</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for o in orders %}
+    <tr>
+      <td>#{{ o.id }}</td>
+      <td>${{ "{:,}".format(o.total) }}</td>
+      <td><span class="status status-{{ o.status }}">{{ o.status }}</span></td>
+      <td>{{ o.created_at[:16] }}</td>
+      <td><a href="{{ url_for('order_detail', oid=o.id) }}" class="btn btn-primary btn-sm">查看</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endblock %}

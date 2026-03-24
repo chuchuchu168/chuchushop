@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}炭吉批發同溫層{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+{% if session.get('user_id') %}
+<header class="navbar">
+  <a class="brand" href="{{ url_for('home') }}">炭吉批發同溫層</a>
+  <nav>
+    <a href="{{ url_for('catalog') }}">商品目錄</a>
+    <a href="{{ url_for('cart_page') }}">購物車{% if session.get('cart') %}<span class="badge-cart">{{ session['cart']|length }}</span>{% endif %}</a>
+    <a href="{{ url_for('orders') }}">我的訂單</a>
+    <a href="https://line.me/R/ti/p/@813bemvp" target="_blank">許願池</a>
+    {% if session.get('is_admin') %}<a href="{{ url_for('admin_dashboard') }}">管理後台</a>{% endif %}
+    <a href="{{ url_for('logout') }}">登出</a>
+  </nav>
+</header>
+{% endif %}
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for cat, msg in messages %}
+    <div class="flash flash-{{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+{% block scripts %}{% endblock %}
+</body>
+</html>

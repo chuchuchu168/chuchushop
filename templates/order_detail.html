@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}訂單 #{{ order.id }}{% endblock %}
+{% block content %}
+<h1>訂單 #{{ order.id }}</h1>
+
+<div class="card">
+  <p><strong>狀態：</strong><span class="status status-{{ order.status }}">{{ order.status }}</span></p>
+  <p><strong>日期：</strong>{{ order.created_at[:16] }}</p>
+  {% if order.note %}<p><strong>備註：</strong>{{ order.note }}</p>{% endif %}
+</div>
+
+{% if order.status == '待匯款' %}
+<div class="bank-info">
+  <h3>匯款資訊</h3>
+  <p><strong>銀行：</strong>（請填入銀行名稱）</p>
+  <p><strong>帳號：</strong>（請填入帳號）</p>
+  <p><strong>戶名：</strong>（請填入戶名）</p>
+</div>
+{% endif %}
+
+<table>
+  <thead>
+    <tr><th>品牌</th><th>商品</th><th>單價</th><th>數量</th><th>小計</th></tr>
+  </thead>
+  <tbody>
+    {% for it in items %}
+    <tr>
+      <td>{{ it.brand }}</td>
+      <td>{{ it.product_name }}</td>
+      <td>${{ "{:,}".format(it.price) }}</td>
+      <td>{{ it.qty }}</td>
+      <td>${{ "{:,}".format(it.price * it.qty) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr><th colspan="4" style="text-align:right">合計</th><th>${{ "{:,}".format(order.total) }}</th></tr>
+  </tfoot>
+</table>
+
+<a href="{{ url_for('orders') }}" class="btn btn-primary mt-1">返回訂單列表</a>
+{% endblock %}
