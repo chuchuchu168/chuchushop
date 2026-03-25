@@ -16,12 +16,14 @@
   <p class="text-muted">無待審核會員</p>
   {% else %}
   <table>
-    <thead><tr><th>公司</th><th>聯絡人</th><th>電話</th><th>Email</th><th>註冊時間</th><th>操作</th></tr></thead>
+    <thead><tr><th>本名</th><th>來源</th><th>群組暱稱</th><th>LINE ID</th><th>電話</th><th>Email</th><th>註冊時間</th><th>操作</th></tr></thead>
     <tbody>
     {% for u in pending %}
     <tr>
-      <td>{{ u.company }}</td>
-      <td>{{ u.contact }}</td>
+      <td>{{ u.real_name }}</td>
+      <td>{{ u.source }}</td>
+      <td>{{ u.group_nickname }}</td>
+      <td>{{ u.line_id }}</td>
       <td>{{ u.phone }}</td>
       <td>{{ u.email }}</td>
       <td>{{ u.created_at[:16] }}</td>
@@ -62,12 +64,12 @@
   <p class="text-muted">尚無訂單</p>
   {% else %}
   <table>
-    <thead><tr><th>#</th><th>公司</th><th>金額</th><th>狀態</th><th>日期</th><th>操作</th></tr></thead>
+    <thead><tr><th>#</th><th>會員</th><th>金額</th><th>狀態</th><th>日期</th><th>操作</th></tr></thead>
     <tbody>
     {% for o in orders %}
     <tr>
       <td>{{ o.id }}</td>
-      <td>{{ o.company }}</td>
+      <td>{{ o.real_name if o.real_name else o.company }}</td>
       <td>${{ "{:,}".format(o.total) }}</td>
       <td><span class="status status-{{ o.status }}">{{ o.status }}</span></td>
       <td>{{ o.created_at[:16] }}</td>
@@ -97,14 +99,17 @@
   <p class="text-muted">尚無已審核會員</p>
   {% else %}
   <table>
-    <thead><tr><th>公司</th><th>聯絡人</th><th>電話</th><th>Email</th><th>註冊時間</th></tr></thead>
+    <thead><tr><th>本名</th><th>群組暱稱</th><th>LINE ID</th><th>電話</th><th>Email</th><th>收件門市</th><th>收件地址</th><th>註冊時間</th></tr></thead>
     <tbody>
     {% for u in users %}
     <tr>
-      <td>{{ u.company }}</td>
-      <td>{{ u.contact }}</td>
+      <td>{{ u.real_name }}</td>
+      <td>{{ u.group_nickname }}</td>
+      <td>{{ u.line_id }}</td>
       <td>{{ u.phone }}</td>
       <td>{{ u.email }}</td>
+      <td>{{ u.shipping_store }}</td>
+      <td>{{ u.shipping_address }}</td>
       <td>{{ u.created_at[:16] }}</td>
     </tr>
     {% endfor %}

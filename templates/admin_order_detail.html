@@ -4,10 +4,16 @@
 <h1>訂單 #{{ order.id }}</h1>
 
 <div class="card">
-  <p><strong>公司：</strong>{{ order.company }}</p>
-  <p><strong>聯絡人：</strong>{{ order.contact }}</p>
-  <p><strong>電話：</strong>{{ order.phone }}</p>
+  <p><strong>姓名：</strong>{{ order.real_name }}</p>
+  <p><strong>電話：</strong>{{ order.user_phone }}</p>
   <p><strong>Email：</strong>{{ order.email }}</p>
+  <p><strong>LINE ID：</strong>{{ order.line_id }}</p>
+  <hr style="margin:8px 0;border:none;border-top:1px solid #e0e0e0;">
+  <p><strong>收件姓名：</strong>{{ order.shipping_name }}</p>
+  <p><strong>收件電話：</strong>{{ order.shipping_phone }}</p>
+  <p><strong>收件門市：</strong>{{ order.shipping_store }}</p>
+  <p><strong>收件地址：</strong>{{ order.shipping_address }}</p>
+  <hr style="margin:8px 0;border:none;border-top:1px solid #e0e0e0;">
   <p><strong>狀態：</strong><span class="status status-{{ order.status }}">{{ order.status }}</span></p>
   <p><strong>日期：</strong>{{ order.created_at[:16] }}</p>
   {% if order.note %}<p><strong>備註：</strong>{{ order.note }}</p>{% endif %}

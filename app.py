@@ -30,9 +30,15 @@ def init_db():
     db.executescript("""
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        company TEXT NOT NULL,
-        contact TEXT NOT NULL,
+        real_name TEXT NOT NULL,
+        source TEXT DEFAULT '',
+        group_nickname TEXT DEFAULT '',
+        line_id TEXT DEFAULT '',
         phone TEXT NOT NULL,
+        shipping_store TEXT DEFAULT '',
+        shipping_address TEXT DEFAULT '',
+        shipping_phone TEXT DEFAULT '',
+        shipping_name TEXT DEFAULT '',
         email TEXT NOT NULL UNIQUE,
         password_hash TEXT NOT NULL,
         approved INTEGER DEFAULT 0,
@@ -85,8 +91,8 @@ def init_db():
     if not cur.fetchone():
         pw = hash_pw("Chuchu@2026!")
         db.execute(
-            "INSERT INTO users(company,contact,phone,email,password_hash,approved,is_admin) VALUES(?,?,?,?,?,1,1)",
-            ("管理員", "Admin", "0000000000", "admin@shop.com", pw),
+            "INSERT INTO users(real_name,phone,email,password_hash,approved,is_admin) VALUES(?,?,?,?,1,1)",
+            ("管理員", "0000000000", "admin@shop.com", pw),
         )
     db.commit()
     db.close()
@@ -154,12 +160,21 @@ def register():
         if exists:
             flash("此 Email 已註冊", "danger")
             return redirect(url_for("register"))
+        if request.form["password"] != request.form["password_confirm"]:
+            flash("兩次密碼不一致", "danger")
+            return redirect(url_for("register"))
         db.execute(
-            "INSERT INTO users(company,contact,phone,email,password_hash) VALUES(?,?,?,?,?)",
+            "INSERT INTO users(real_name,source,group_nickname,line_id,phone,shipping_store,shipping_address,shipping_phone,shipping_name,email,password_hash) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
             (
-                request.form["company"].strip(),
-                request.form["contact"].strip(),
+                request.form["real_name"].strip(),
+                request.form.get("source", "").strip(),
+                request.form.get("group_nickname", "").strip(),
+                request.form.get("line_id", "").strip(),
                 request.form["phone"].strip(),
+                request.form.get("shipping_store", "").strip(),
+                request.form.get("shipping_address", "").strip(),
+                request.form.get("shipping_phone", "").strip(),
+                request.form.get("shipping_name", "").strip(),
                 email,
                 hash_pw(request.form["password"]),
             ),
@@ -353,9 +368,9 @@ def order_detail(oid):
 def admin_dashboard():
     db = get_db()
     pending = db.execute("SELECT * FROM users WHERE approved=0 ORDER BY created_at DESC").fetchall()
-    users = db.execute("SELECT * FROM users WHERE approved=1 ORDER BY company").fetchall()
+    users = db.execute("SELECT * FROM users WHERE approved=1 ORDER BY real_name").fetchall()
     all_orders = db.execute("""
-        SELECT o.*, u.company FROM orders o JOIN users u ON o.user_id=u.id
+        SELECT o.*, u.real_name FROM orders o JOIN users u ON o.user_id=u.id
         ORDER BY o.created_at DESC
     """).fetchall()
     # Group products by brand -> product name
@@ -470,7 +485,7 @@ def admin_order_status(oid):
 @admin_required
 def admin_order_detail(oid):
     db = get_db()
-    order = db.execute("SELECT o.*, u.company, u.contact, u.phone, u.email FROM orders o JOIN users u ON o.user_id=u.id WHERE o.id=?", (oid,)).fetchone()
+    order = db.execute("SELECT o.*, u.real_name, u.phone as user_phone, u.email, u.line_id, u.shipping_store, u.shipping_address, u.shipping_phone, u.shipping_name FROM orders o JOIN users u ON o.user_id=u.id WHERE o.id=?", (oid,)).fetchone()
     if not order:
         flash("找不到訂單", "danger")
         return redirect(url_for("admin_dashboard"))

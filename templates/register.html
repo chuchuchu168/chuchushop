@@ -2,28 +2,67 @@
 {% block title %}註冊{% endblock %}
 {% block content %}
 <div class="auth-wrap">
-  <div class="card">
+  <div class="card" style="max-width:520px;">
     <h1>註冊</h1>
     <form method="POST">
       <div class="form-group">
-        <label>公司名稱</label>
-        <input type="text" name="company" required>
+        <label>本名 <span class="required">*</span></label>
+        <input type="text" name="real_name" required>
       </div>
       <div class="form-group">
-        <label>聯絡人</label>
-        <input type="text" name="contact" required>
+        <label>怎麼來的</label>
+        <select name="source">
+          <option value="">請選擇</option>
+          <option value="Facebook">Facebook</option>
+          <option value="Instagram">Instagram</option>
+          <option value="LINE群組">LINE 群組</option>
+          <option value="朋友介紹">朋友介紹</option>
+          <option value="Google搜尋">Google 搜尋</option>
+          <option value="其他">其他</option>
+        </select>
       </div>
       <div class="form-group">
-        <label>電話</label>
+        <label>群組暱稱</label>
+        <input type="text" name="group_nickname" placeholder="LINE/FB 群組中的暱稱">
+      </div>
+      <div class="form-group">
+        <label>LINE ID</label>
+        <input type="text" name="line_id">
+      </div>
+      <div class="form-group">
+        <label>電話 <span class="required">*</span></label>
         <input type="tel" name="phone" required>
       </div>
+      <hr style="margin:16px 0;border:none;border-top:1px solid #e0e0e0;">
+      <p style="color:#666;font-size:14px;margin-bottom:12px;">收件資訊（可稍後補填）</p>
       <div class="form-group">
-        <label>Email</label>
+        <label>收件門市</label>
+        <input type="text" name="shipping_store" placeholder="超商門市名稱">
+      </div>
+      <div class="form-group">
+        <label>收件地址</label>
+        <input type="text" name="shipping_address" placeholder="宅配地址">
+      </div>
+      <div class="form-group">
+        <label>收件電話</label>
+        <input type="tel" name="shipping_phone">
+      </div>
+      <div class="form-group">
+        <label>收件姓名</label>
+        <input type="text" name="shipping_name">
+      </div>
+      <hr style="margin:16px 0;border:none;border-top:1px solid #e0e0e0;">
+      <div class="form-group">
+        <label>Email <span class="required">*</span></label>
         <input type="email" name="email" required>
       </div>
       <div class="form-group">
-        <label>密碼</label>
+        <label>密碼 <span class="required">*</span></label>
         <input type="password" name="password" required minlength="6">
+      </div>
+      <div class="form-group">
+        <label>確認密碼 <span class="required">*</span></label>
+        <input type="password" name="password_confirm" required minlength="6">
       </div>
       <button class="btn btn-primary btn-block" type="submit">註冊</button>
     </form>
