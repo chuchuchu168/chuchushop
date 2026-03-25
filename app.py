@@ -67,7 +67,7 @@ def init_db():
     # Create default admin if not exists
     cur = db.execute("SELECT id FROM users WHERE is_admin=1")
     if not cur.fetchone():
-        pw = hash_pw("admin123")
+        pw = hash_pw("Chuchu@2026!")
         db.execute(
             "INSERT INTO users(company,contact,phone,email,password_hash,approved,is_admin) VALUES(?,?,?,?,?,1,1)",
             ("管理員", "Admin", "0000000000", "admin@shop.com", pw),
