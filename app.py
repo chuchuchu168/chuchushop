@@ -46,7 +46,23 @@ def init_db():
         price INTEGER NOT NULL DEFAULT 0,
         image TEXT DEFAULT '',
         sort_order INTEGER DEFAULT 0,
-        active INTEGER DEFAULT 1
+        active INTEGER DEFAULT 1,
+        barcode TEXT DEFAULT '',
+        spec TEXT DEFAULT '',
+        stock INTEGER DEFAULT 0
+    );
+    CREATE TABLE IF NOT EXISTS brands (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE,
+        logo TEXT DEFAULT '',
+        sort_order INTEGER DEFAULT 0
+    );
+    CREATE TABLE IF NOT EXISTS product_images (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        brand TEXT NOT NULL,
+        product_name TEXT NOT NULL,
+        image TEXT NOT NULL,
+        UNIQUE(brand, product_name)
     );
     CREATE TABLE IF NOT EXISTS orders (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
