@@ -31,9 +31,13 @@
         <form method="POST" action="{{ url_for('admin_approve', uid=u.id) }}" style="display:inline">
           <button class="btn btn-success btn-sm">通過</button>
         </form>
-        <form method="POST" action="{{ url_for('admin_reject', uid=u.id) }}" style="display:inline">
-          <button class="btn btn-danger btn-sm">拒絕</button>
-        </form>
+        <button class="btn btn-danger btn-sm" onclick="showReject({{ u.id }})">拒絕</button>
+        <div id="reject-{{ u.id }}" style="display:none;margin-top:6px;">
+          <form method="POST" action="{{ url_for('admin_reject', uid=u.id) }}">
+            <input type="text" name="reason" placeholder="拒絕原因" style="width:160px;padding:4px;font-size:13px;">
+            <button class="btn btn-danger btn-sm" type="submit">確認拒絕</button>
+          </form>
+        </div>
       </td>
     </tr>
     {% endfor %}
@@ -126,6 +130,10 @@ function switchTab(name) {
   document.querySelectorAll('.admin-tabs button').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   event.target.classList.add('active');
+}
+function showReject(uid) {
+  var el = document.getElementById('reject-' + uid);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 </script>
 {% endblock %}

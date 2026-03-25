@@ -1,4 +1,6 @@
-import os, sqlite3, hashlib, secrets
+import os, sqlite3, hashlib, secrets, smtplib, threading
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from functools import wraps
 from flask import (
     Flask, render_template, request, redirect, url_for,
@@ -8,6 +10,29 @@ from flask import (
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 DB_PATH = os.environ.get("DB_PATH", os.path.join(os.path.dirname(__file__), "database.db"))
+
+MAIL_SENDER = os.environ.get("MAIL_SENDER", "summerseaboard@gmail.com")
+MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD", "")
+
+def send_email(to, subject, body):
+    """背景寄信，不阻塞 request"""
+    if not MAIL_PASSWORD:
+        print(f"[MAIL SKIP] 未設定 MAIL_PASSWORD，跳過寄信給 {to}")
+        return
+    def _send():
+        try:
+            msg = MIMEMultipart()
+            msg["From"] = f"炭吉批發同溫層 <{MAIL_SENDER}>"
+            msg["To"] = to
+            msg["Subject"] = subject
+            msg.attach(MIMEText(body, "plain", "utf-8"))
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
+                s.login(MAIL_SENDER, MAIL_PASSWORD)
+                s.send_message(msg)
+            print(f"[MAIL OK] 寄給 {to}")
+        except Exception as e:
+            print(f"[MAIL ERR] {e}")
+    threading.Thread(target=_send, daemon=True).start()
 
 # ── DB helpers ──────────────────────────────────────────────
 
@@ -405,18 +430,40 @@ def admin_product_variants(brand_name, product_name):
 @admin_required
 def admin_approve(uid):
     db = get_db()
-    db.execute("UPDATE users SET approved=1 WHERE id=?", (uid,))
-    db.commit()
-    flash("已通過審核", "success")
+    user = db.execute("SELECT * FROM users WHERE id=?", (uid,)).fetchone()
+    if user:
+        db.execute("UPDATE users SET approved=1 WHERE id=?", (uid,))
+        db.commit()
+        send_email(
+            user["email"],
+            "【炭吉批發同溫層】您的帳號已通過審核",
+            f"{user['real_name']} 您好，\n\n"
+            f"恭喜！您的帳號已通過審核，現在可以登入選購商品了。\n\n"
+            f"登入網址：https://chuchushop.onrender.com/login\n\n"
+            f"炭吉批發同溫層 敬上"
+        )
+        flash("已通過審核，已寄信通知", "success")
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/reject/<int:uid>", methods=["POST"])
 @admin_required
 def admin_reject(uid):
     db = get_db()
-    db.execute("DELETE FROM users WHERE id=? AND approved=0", (uid,))
-    db.commit()
-    flash("已拒絕", "info")
+    user = db.execute("SELECT * FROM users WHERE id=?", (uid,)).fetchone()
+    if user:
+        reason = request.form.get("reason", "").strip()
+        send_email(
+            user["email"],
+            "【炭吉批發同溫層】帳號審核未通過",
+            f"{user['real_name']} 您好，\n\n"
+            f"很抱歉，您的帳號審核未通過。\n\n"
+            f"原因：{reason if reason else '未提供'}\n\n"
+            f"如有疑問請聯繫我們。\n\n"
+            f"炭吉批發同溫層 敬上"
+        )
+        db.execute("DELETE FROM users WHERE id=? AND approved=0", (uid,))
+        db.commit()
+        flash("已拒絕，已寄信通知", "info")
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/product/add", methods=["POST"])
